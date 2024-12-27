@@ -1,0 +1,127 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_TOURISTS 100
+
+struct Tourist {
+    int touristID;
+    char name[50];
+    char destination[50];
+    char guide[50];
+    char status[10]; // "On Tour" or "Completed"
+    float payment;
+};
+
+struct Tourist tourists[MAX_TOURISTS];
+int count = 0;
+
+void addTourist() {
+    if (count < MAX_TOURISTS) {
+        printf("Enter tourist ID: ");
+        scanf("%d", &tourists[count].touristID);
+        getchar(); // Consume newline character
+
+        printf("Enter tourist name: ");
+        fgets(tourists[count].name, 50, stdin);
+        tourists[count].name[strcspn(tourists[count].name, "\n")] = '\0'; // Remove newline character
+
+        printf("Enter tourist destination: ");
+        fgets(tourists[count].destination, 50, stdin);
+        tourists[count].destination[strcspn(tourists[count].destination, "\n")] = '\0'; // Remove newline character
+
+        printf("Enter tourist guide: ");
+        fgets(tourists[count].guide, 50, stdin);
+        tourists[count].guide[strcspn(tourists[count].guide, "\n")] = '\0'; // Remove newline character
+
+        printf("Enter payment amount: ");
+        scanf("%f", &tourists[count].payment);
+        getchar(); // Consume newline character
+
+        strcpy(tourists[count].status, "On Tour");
+
+        count++;
+        printf("Tourist added successfully!\n");
+    } else {
+        printf("Maximum number of tourists reached.\n");
+    }
+}
+
+void displayTourists() {
+    if (count == 0) {
+        printf("No tourists available.\n");
+    } else {
+        printf("\nList of Tourists:\n");
+        printf("ID\tName\t\tDestination\t\tGuide\t\tStatus\t\tPayment\n");
+        printf("-------------------------------------------------------------------------------------\n");
+        for (int i = 0; i < count; i++) {
+            printf("%d\t%s\t\t%s\t\t%s\t\t%s\t\t%.2f\n", tourists[i].touristID, tourists[i].name, tourists[i].destination, tourists[i].guide, tourists[i].status, tourists[i].payment);
+        }
+    }
+}
+
+void dischargeTourist() {
+    int id;
+    printf("Enter tourist ID to mark as completed: ");
+    scanf("%d", &id);
+
+    int found = 0;
+    for (int i = 0; i < count; i++) {
+        if (tourists[i].touristID == id) {
+            if (strcmp(tourists[i].status, "On Tour") == 0) {
+                printf("Tourist has a payment due of %.2f.\n", tourists[i].payment);
+                printf("Do you want to pay the amount? (y/n): ");
+                char choice;
+                scanf(" %c", &choice);
+
+                if (choice == 'y' || choice == 'Y') {
+                    printf("Payment completed successfully!\n");
+                    tourists[i].payment = 0.0;
+                    strcpy(tourists[i].status, "Completed");
+                    printf("Tourist marked as completed!\n");
+                } else {
+                    printf("Tourist cannot be marked as completed until the payment is settled.\n");
+                }
+            } else {
+                printf("Tourist has already completed the tour.\n");
+            }
+            found = 1;
+            break;
+        }
+    }
+
+    if (!found) {
+        printf("Tourist not found.\n");
+    }
+}
+
+int main() {
+    int choice;
+    while (1) {
+        printf("\nTourist Management System\n");
+        printf("1. Add Tourist\n");
+        printf("2. Display All Tourists\n");
+        printf("3. Mark Tourist as Completed\n");
+        printf("4. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                addTourist();
+                break;
+            case 2:
+                displayTourists();
+                break;
+            case 3:
+                dischargeTourist();
+                break;
+            case 4:
+                printf("Exiting system...\n");
+                return 0;
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    }
+
+    return 0;
+}
